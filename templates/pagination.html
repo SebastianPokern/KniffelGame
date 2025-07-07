@@ -1,0 +1,25 @@
+{% if seitenanzahl > 1 %}
+  <div class="flex justify-center mt-6 space-x-2 text-sm">
+    {% if seite > 1 %}
+      <a href="?seite=1" class="text-blue-600 hover:underline">&laquo;</a>
+      <a href="?seite={{ seite - 1 }}" class="text-blue-600 hover:underline">&lsaquo;</a>
+    {% endif %}
+
+    {% for s in range(1, seitenanzahl + 1) %}
+      {% if s == seite %}
+        <span class="font-bold text-gray-800 dark:text-white">{{ s }}</span>
+      {% elif s <= 2 or s > seitenanzahl - 2 or (s >= seite - 1 and s <= seite + 1) %}
+        <a href="?seite={{ s }}" class="text-blue-600 hover:underline">{{ s }}</a>
+      {% elif s == 3 and seite > 5 %}
+        <span>…</span>
+      {% elif s == seitenanzahl - 2 and seite < seitenanzahl - 4 %}
+        <span>…</span>
+      {% endif %}
+    {% endfor %}
+
+    {% if seite < seitenanzahl %}
+      <a href="?seite={{ seite + 1 }}" class="text-blue-600 hover:underline">&rsaquo;</a>
+      <a href="?seite={{ seitenanzahl }}" class="text-blue-600 hover:underline">&raquo;</a>
+    {% endif %}
+  </div>
+{% endif %}

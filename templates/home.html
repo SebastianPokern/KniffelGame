@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block title %}Start{% endblock %}
+{% block content %}
+  <h1 class="text-2xl font-semibold mb-4">Willkommen {{ benutzer }}</h1>
+
+  {% if letzter_status %}
+    <p class="text-gray-700 dark:text-gray-200 mb-2">Letzte Schalteraktivierung:</p>
+    <p class="text-green-600 font-mono mb-4">{{ letzter_status }}</p>
+  {% else %}
+    <p class="text-red-600 mb-4">Der Schalter wurde noch nie gedrückt.</p>
+  {% endif %}
+
+  <a href="/schalter-ui" class="inline-block mt-4 bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded shadow">🔘 Schalter drücken</a>
+{% endblock %}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="de" class="{% if session.get('theme') == 'dark' %}dark{% else %}light{% endif %}">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Totmann-Schalter{% endblock %}</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class'
+      }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-100 text-black dark:bg-gray-900 dark:text-white flex items-center justify-center min-h-screen">
+    <div class="bg-white dark:bg-gray-800 p-8 rounded shadow-md w-[48rem] max-w-full mx-auto text-center">
+        {% block content %}{% endblock %}
+
+        {% if config.DEBUG %}
+          <p class="text-sm text-gray-400 mt-6">[DEBUG-MODUS AKTIV]</p>
+        {% endif %}
+
+        {% if not hide_nav %}
+            {% include 'nav.html' %}
+        {% endif %}
+    </div>
+
+    {% block scripts %}{% endblock %}
+    <script>
+        setInterval(() => {
+        fetch("/api/pruefe-schalter").catch(console.error);
+      }, 10 * 60 * 1000); // alle 10 Minuten
+    </script>
+</body>
+</html>

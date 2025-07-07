@@ -1,0 +1,23 @@
+{% if session.get("user_id") %}
+<form method="post" action="/theme" class="absolute top-4 right-6 text-sm">
+    <select name="theme" onchange="this.form.submit()"
+    class="bg-white dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-600 rounded px-3 py-1 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out hover:cursor-pointer">
+        <option value="light" {% if session.theme == 'light' %}selected{% endif %}>🌞 Light</option>
+        <option value="dark" {% if session.theme == 'dark' %}selected{% endif %}>🌚 Dark</option>
+    </select>
+</form>
+{% endif %}
+<!-- templates/nav.html -->
+<div class="mt-6 space-x-4 text-sm">
+    <a href="/" class="text-blue-600 hover:underline">🏠 Start</a>
+
+    {% if debug_mode or session.get("user_id") %}
+        <a href="/status" class="text-blue-600 hover:underline">📊 Status</a>
+        <a href="/profil" class="text-blue-600 hover:underline">👤 Profil</a>
+        <a href="/schalter-ui" class="text-blue-600 hover:underline">🔘 Schalter</a>
+        <a href="/einstellungen" class="text-blue-600 hover:underline">⚙️ Einstellungen</a>
+        <a href="/logout" class="text-red-500 hover:underline">🔓 Logout</a>
+    {% elif request.path != '/login' %}
+        <a href="/login" class="text-blue-600 hover:underline">🔐 Login</a>
+    {% endif %}
+</div>

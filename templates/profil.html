@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+{% block title %}Benutzerprofil{% endblock %}
+{% block content %}
+  <h1 class="text-2xl font-semibold mb-6">👤 Benutzerprofil</h1>
+
+  <div class="text-left text-sm space-y-2 mb-6">
+      <p><strong>Benutzername:</strong> {{ benutzername }}</p>
+      <p><strong>E-Mail:</strong> {{ email }}</p>
+      <p><strong>Aktives Theme:</strong> {{ theme|capitalize }}</p>
+  </div>
+
+  <p class="text-gray-500 text-xs italic">Passwortänderung wird demnächst möglich sein.</p>
+{% endblock %}

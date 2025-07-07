@@ -1,0 +1,22 @@
+# Virtuelle Umgebung
+.venv/
+venv/
+
+# Bytecode und Caches
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Log-Dateien
+*.log
+
+# .env-Dateien mit geheimen Zugangsdaten
+.env
+
+# IDE-spezifische Dateien (PyCharm, VSCode etc.)
+.idea/
+.vscode/
+
+# Betriebssystem-Dateien
+.DS_Store
+Thumbs.db

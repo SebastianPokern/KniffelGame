@@ -1,0 +1,8 @@
+{% extends 'layout.html' %}
+{% block title %}{{ titel or "Erfolg" }}{% endblock %}
+{% block content %}
+    <h1 class="text-2xl font-semibold text-green-600 mb-4">
+        ✅ {{ titel or "Aktion erfolgreich" }}
+    </h1>
+    <p class="text-gray-700 dark:text-gray-200 mb-2">{{ nachricht or "Vorgang wurde erfolgreich durchgeführt." }}</p>
+{% endblock %}

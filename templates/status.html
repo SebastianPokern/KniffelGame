@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+{% block title %}Schalter{% endblock %}
+{% block content %}
+    <div>
+        <h1 class="text-2xl font-semibold mb-6">Totmann-Schalter Status</h1>
+
+        {% if eintrag_vorhanden %}
+            <p class="text-gray-700 dark:text-gray-200 text-lg mb-2">
+                Letzte Aktivierung:
+            </p>
+            <p class="text-xl text-green-600 font-mono mb-4">
+                {{ zeitpunkt }}
+            </p>
+            <p class="text-gray-700 dark:text-gray-200 text-sm mb-2">
+                Durchgeführt von: <strong>{{ benutzer }}</strong>
+            </p>
+        {% else %}
+            <p class="text-red-600 text-lg font-semibold">
+                Der Schalter wurde bisher noch nie aktiviert.
+            </p>
+        {% endif %}
+    </div>
+
+    <hr class="my-6 border-t border-gray-300 dark:border-gray-600">
+
+    <h2 class="text-xl font-semibold mb-2">Letzte Aktivitäten</h2>
+    <ul class="text-sm space-y-1 text-left">
+      {% for eintrag in logliste %}
+        <li class="{% if eintrag.typ == 'fehler' %}text-red-600{% else %}text-green-700{% endif %}">
+          {{ eintrag.zeitpunkt }} – {{ eintrag.meldung }} ({{ eintrag.benutzer }})
+        </li>
+      {% endfor %}
+    </ul>
+
+    {% include 'pagination.html' %}
+
+{% endblock %}

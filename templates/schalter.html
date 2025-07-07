@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+{% block title %}Schalter{% endblock %}
+{% block content %}
+        <h1 class="text-2xl mb-4 font-semibold">Hallo {{ benutzer }}, löse den Totmann-Schalter aus!</h1>
+        <div class="flex justify-center items-center">
+          <div class="bg-gray-500 w-40 h-40 rounded-md shadow-inner relative">
+            <button id="schalter"
+                    class="myButton mt-7">
+            </button>
+          </div>
+        </div>
+        <p id="meldung" class="mt-6 text-green-600 font-medium text-center"></p>
+{% endblock %}
+
+    {% block scripts %}
+    <script>
+      $("#schalter").click(function () {
+        const btn = $(this);
+        btn.addClass("leuchtet");
+
+        $.post("/schalter", function (response) {
+          if (response.erfolg) {
+            $("#meldung").text(response.meldung);
+          } else {
+            $("#meldung").text("Fehler: " + response.fehler).addClass("text-red-600");
+          }
+
+          setTimeout(() => {
+            btn.removeClass("leuchtet");
+          }, 800);
+        });
+      });
+    </script>
+    {% endblock %}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: sans-serif; color: #222; }
+        .mailbox {
+            padding: 20px; background: #fff9f2; border: 1px solid #f0ad4e;
+            border-radius: 6px; max-width: 600px; margin: auto;
+        }
+        h1 { color: #c9302c; }
+        p { margin: 0.8em 0; }
+    </style>
+</head>
+<body>
+    <div class="mailbox">
+        <h1>{{ betreff }}</h1>
+        <p>{{ nachricht }}</p>
+        {% if systeminfo %}
+        <hr>
+        <p><strong>Systeminfo:</strong> {{ systeminfo }}</p>
+        {% endif %}
+        <p style="font-size: 0.8em; color: #999;">Generiert: {{ timestamp }}</p>
+    </div>
+</body>
+</html>
