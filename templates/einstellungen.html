@@ -7,18 +7,6 @@
         <label class="block mb-2 font-medium">E-Mail Empfänger</label>
         <input name="email_empfaenger" value="{{ email }}" class="w-full border p-2 rounded mb-4 dark:bg-gray-800 dark:text-white dark:border-gray-600" required>
 
-        <label class="block mb-2 font-medium">Intervall in der der Schalter gedrückt werden muss (Stunden)</label>
-        <input name="intervall_stunden" type="number" value="{{ intervall }}" class="w-full border p-2 rounded mb-4 dark:bg-gray-800 dark:text-white dark:border-gray-600" min="1" required>
-
-        <label class="block mb-2 font-medium">Maximale Inaktivität des Schalters (Tage)</label>
-        <input name="max_inaktiv_tage" type="number" value="{{ max_tage }}" class="w-full border p-2 rounded mb-4 dark:bg-gray-800 dark:text-white dark:border-gray-600" min="1" required>
-
-        <label class="block mb-2">Schalter-Check: Client-Intervall (min):</label>
-        <input type="number" name="intervall_check_client" value="{{ intervall_check_client }}" class="w-full border p-2 rounded mb-4 dark:bg-gray-800 dark:text-white dark:border-gray-600">
-
-        <label class="block mb-4">Schalter-Check: Server-Intervall (min):</label>
-        <input type="number" name="intervall_check_server" value="{{ intervall_check_server }}" class="w-full border p-2 rounded mb-4 dark:bg-gray-800 dark:text-white dark:border-gray-600">
-
         <label class="block mb-2 font-medium">Anzahl Logeinträge pro Seite</label>
         <input name="anzahl_logeintraege" type="number" min="5" max="100"
                value="{{ anzahl_logeintraege }}"
