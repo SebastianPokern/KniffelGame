@@ -37,21 +37,6 @@ app.register_blueprint(auth)
 app.register_blueprint(core)
 app.register_blueprint(admin)
 
-# Flask-basierter Hintergrund-Thread
-import threading
-import time
-from functions import pruefe_inaktivitaet
-
-def start_hintergrundpruefung():
-    def loop():
-        init_utils(mysql)
-        while True:
-            pruefe_inaktivitaet()
-            time.sleep(60 * 15)  # alle 15 Minuten prüfen
-    threading.Thread(target=loop, daemon=True).start()
-
-start_hintergrundpruefung()
-
 # 🚀 Anwendung starten
 if __name__ == "__main__":
     app.run()

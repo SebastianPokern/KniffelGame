@@ -12,9 +12,7 @@
     <a href="/" class="text-blue-600 hover:underline">🏠 Start</a>
 
     {% if debug_mode or session.get("user_id") %}
-        <a href="/status" class="text-blue-600 hover:underline">📊 Status</a>
         <a href="/profil" class="text-blue-600 hover:underline">👤 Profil</a>
-        <a href="/schalter-ui" class="text-blue-600 hover:underline">🔘 Schalter</a>
         <a href="/einstellungen" class="text-blue-600 hover:underline">⚙️ Einstellungen</a>
         <a href="/logout" class="text-red-500 hover:underline">🔓 Logout</a>
     {% elif request.path != '/login' %}
