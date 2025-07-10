@@ -31,11 +31,13 @@ init_utils(mysql)
 from auth_routes import auth
 from core_routes import core
 from admin_routes import admin
+from spiel_routes import game
 
 # 🔗 Blueprints registrieren
 app.register_blueprint(auth)
 app.register_blueprint(core)
 app.register_blueprint(admin)
+app.register_blueprint(game)
 
 # 🚀 Anwendung starten
 if __name__ == "__main__":

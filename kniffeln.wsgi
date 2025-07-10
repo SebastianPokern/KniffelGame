@@ -1,4 +1,4 @@
-# /pokern/www/KniffelGame/kniffel.wsgi
+# kniffel.wsgi
 import sys
 import os
 from pathlib import Path
