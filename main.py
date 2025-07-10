@@ -1,4 +1,4 @@
-# main.py – Totmannschalter Anwendung (zentraler Einstiegspunkt)
+# main.py – Kniffel-Spiel
 
 from flask import Flask
 from flask_mysqldb import MySQL
