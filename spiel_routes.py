@@ -1,5 +1,5 @@
 # spiel_routes.py
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, url_for
 from utils import login_required
 
 game = Blueprint("spiel", __name__)

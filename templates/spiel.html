@@ -30,10 +30,11 @@
 </div>
 
 <!-- 🎲 Würfelanzeige -->
-<div class="mt-8">
+<div class="mt-8 dice-row">
   <div class="flex justify-center gap-4 mb-4">
     {% for i in range(1, 6) %}
-    <img src="{{ url_for('static', filename='img/dice/dice' + i|string + '.svg') }}" alt="Würfel {{ i }}" class="w-16 h-16 cursor-pointer hover:scale-110 transition-transform duration-200">
+    <img src="{{ url_for('static', filename='img/dice/dice' + i|string + '-white.svg') }}" alt="Würfel {{ i }}" class="w-16 h-16 cursor-pointer hover:scale-110 transition-transform duration-200 hidden dark:block">
+    <img src="{{ url_for('static', filename='img/dice/dice' + i|string + '.svg') }}" alt="Würfel {{ i }}" class="w-16 h-16 cursor-pointer hover:scale-110 transition-transform duration-200 dark:hidden">
     {% endfor %}
   </div>
 </div>
@@ -55,5 +56,7 @@
     <button class="px-6 py-3 bg-green-500 text-white font-bold rounded-full shadow opacity-50 cursor-not-allowed" disabled>SPIELEN</button>
   </div>
 </div>
+
+<script src="{{ url_for('static', filename='js/dice.js') }}"></script>
 
 {% endblock %}

@@ -2,7 +2,7 @@
 <html lang="de" class="{% if session.get('theme') == 'dark' %}dark{% else %}light{% endif %}">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Totmann-Schalter{% endblock %}</title>
+    <title>{% block title %}Kniffeln!{% endblock %}</title>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -10,7 +10,7 @@
         darkMode: 'class'
       }
     </script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     {% block head %}{% endblock %}
 </head>
 <body class="bg-gray-100 text-black dark:bg-gray-900 dark:text-white flex items-center justify-center min-h-screen">
