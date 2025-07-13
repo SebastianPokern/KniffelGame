@@ -1,4 +1,4 @@
-# main.py – Totmannschalter Anwendung (zentraler Einstiegspunkt)
+# main.py – Kniffel-Spiel
 
 from flask import Flask
 from flask_mysqldb import MySQL
@@ -31,13 +31,13 @@ init_utils(mysql)
 from auth_routes import auth
 from core_routes import core
 from admin_routes import admin
-from spiel_routes import spiel
+from spiel_routes import spielbrett
 
 # 🔗 Blueprints registrieren
 app.register_blueprint(auth)
 app.register_blueprint(core)
 app.register_blueprint(admin)
-app.register_blueprint(spiel)
+app.register_blueprint(spielbrett)
 
 # 🚀 Anwendung starten
 if __name__ == "__main__":

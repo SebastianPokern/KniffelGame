@@ -1,11 +1,11 @@
-# File: spiel_routes.py
-from flask import Blueprint, render_template
+# spiel_routes.py
+from flask import Blueprint, render_template, url_for
 from utils import login_required
 
-spiel = Blueprint("spiel", __name__)
+game = Blueprint("spiel", __name__)
 
-# 👤 Kniffel-Spiel: Hauptseite
-@spiel.route("/spiel", strict_slashes=False)
+# 🏠 Spielbrett
+@game.route("/spiel", strict_slashes=False)
 @login_required
-def spiel():
-    return render_template("spiel.html")
+def spielbrett(user):
+    return render_template("spiel.html"), 500
