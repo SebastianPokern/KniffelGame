@@ -7,7 +7,8 @@ from utils import init_utils
 import os
 
 # 🔧 .env laden
-load_dotenv()
+#load_dotenv()
+load_dotenv(dotenv_path=".env")
 
 # 🔧 Flask-App initialisieren
 app = Flask(__name__)
