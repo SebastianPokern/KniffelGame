@@ -1,0 +1,112 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="max-w-3xl mx-auto bg-white dark:bg-gray-900 rounded-xl p-6 shadow-lg">
+  <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">🎲 Neues Spiel starten</h1>
+
+  <!-- Spieler-Auswahl -->
+  <div class="mb-4">
+    <label for="spieler-select" class="block text-gray-700 dark:text-gray-300 font-semibold mb-1">Bekannte Spieler hinzufügen:</label>
+    <div class="flex gap-2">
+      <select id="spieler-select" class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+        <option value="">Spieler auswählen...</option>
+        {% for name in bekannte_spieler %}
+          <option value="{{ name }}">{{ name }}</option>
+        {% endfor %}
+      </select>
+      <button onclick="hinzufuegenSpieler()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow">+</button>
+    </div>
+  </div>
+
+  <!-- Spieler manuell hinzufügen -->
+  <div class="mb-4">
+    <label for="neuer-spieler" class="block text-gray-700 dark:text-gray-300 font-semibold mb-1">Neuen Spieler manuell eingeben:</label>
+    <div class="flex gap-2">
+      <input id="neuer-spieler" type="text" placeholder="Name" class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+      <button onclick="hinzufuegenNeuenSpieler()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow">+</button>
+    </div>
+  </div>
+
+  <!-- Liste ausgewählter Spieler -->
+  <div class="mb-6">
+    <label class="block text-gray-700 dark:text-gray-300 font-semibold mb-1">Teilnehmende Spieler (max. {{ max_mitspieler }}):</label>
+    <ul id="spieler-liste" class="space-y-1"></ul>
+  </div>
+
+  <!-- Formular -->
+  <form method="POST">
+    <div id="spieler-hidden-inputs"></div>
+    <button type="submit"
+      class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded font-bold shadow transition-all opacity-50 cursor-not-allowed"
+      disabled>🎮 Spiel starten</button>
+  </form>
+</div>
+
+<script>
+  const MAX_SPIELER = {{ max_mitspieler | default(3) }};
+  const spielerListe = document.getElementById("spieler-liste");
+  const hiddenInputs = document.getElementById("spieler-hidden-inputs");
+  const submitBtn = document.querySelector("form button[type=submit]");
+
+  function updateSubmitButton() {
+    const anzahl = document.querySelectorAll("#spieler-hidden-inputs input").length;
+    submitBtn.disabled = anzahl < 1;
+    submitBtn.classList.toggle("opacity-50", anzahl < 1);
+    submitBtn.classList.toggle("cursor-not-allowed", anzahl < 1);
+  }
+
+  function hinzufuegenSpieler() {
+    const select = document.getElementById("spieler-select");
+    const name = select.value;
+    if (name) addSpieler(name);
+    select.selectedIndex = 0;
+  }
+
+  function hinzufuegenNeuenSpieler() {
+    const input = document.getElementById("neuer-spieler");
+    const name = input.value.trim();
+    if (name) addSpieler(name);
+    input.value = "";
+  }
+
+  function addSpieler(name) {
+    if (!name) return;
+
+    const vorhandene = [...spielerListe.children].map(li => li.dataset.name);
+    if (vorhandene.includes(name)) return;
+
+    if (vorhandene.length >= MAX_SPIELER) {
+      alert(`Maximal ${MAX_SPIELER} Spieler erlaubt.`);
+      return;
+    }
+
+    // Anzeige
+    const li = document.createElement("li");
+    li.className = "flex items-center justify-between bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 rounded";
+    li.dataset.name = name;
+    li.innerHTML = `
+      <span>${name}</span>
+      <button class="ml-4 text-red-600 hover:text-red-800" onclick="this.closest('li').remove(); removeSpieler('${name}'); updateSubmitButton();">❌</button>
+    `;
+    spielerListe.appendChild(li);
+
+    // Hidden Input
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "spieler[]";
+    input.value = name;
+    input.id = `hidden-${name}`;
+    hiddenInputs.appendChild(input);
+
+    updateSubmitButton();
+  }
+
+  function removeSpieler(name) {
+    const el = document.getElementById(`hidden-${name}`);
+    if (el) el.remove();
+  }
+
+  updateSubmitButton();
+</script>
+
+{% endblock %}

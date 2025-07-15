@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 11. Jul 2025 um 17:35
+-- Erstellungszeit: 15. Jul 2025 um 08:06
 -- Server-Version: 10.4.32-MariaDB
 -- PHP-Version: 8.2.12
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Datenbank: `kniffeln`
 --
+CREATE DATABASE IF NOT EXISTS `kniffeln` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `kniffeln`;
 
 -- --------------------------------------------------------
 
@@ -27,6 +29,7 @@ SET time_zone = "+00:00";
 -- Tabellenstruktur für Tabelle `benutzer`
 --
 
+DROP TABLE IF EXISTS `benutzer`;
 CREATE TABLE `benutzer` (
   `id` int(11) NOT NULL,
   `benutzername` varchar(50) NOT NULL,
@@ -52,18 +55,20 @@ INSERT INTO `benutzer` (`id`, `benutzername`, `passwort_hash`, `email`, `ist_akt
 -- Tabellenstruktur für Tabelle `einstellungen`
 --
 
+DROP TABLE IF EXISTS `einstellungen`;
 CREATE TABLE `einstellungen` (
   `id` int(11) NOT NULL,
   `email_empfaenger` varchar(255) DEFAULT NULL,
-  `anzahl_logeintraege` int(11) DEFAULT 20
+  `anzahl_logeintraege` int(11) DEFAULT 20,
+  `max_mitspieler` int(11) DEFAULT 3
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Daten für Tabelle `einstellungen`
 --
 
-INSERT INTO `einstellungen` (`id`, `email_empfaenger`, `anzahl_logeintraege`) VALUES
-(1, 'sebastian.pokern@googlemail.com', 20);
+INSERT INTO `einstellungen` (`id`, `email_empfaenger`, `anzahl_logeintraege`, `max_mitspieler`) VALUES
+(1, 'sebastian.pokern@googlemail.com', 20, 3);
 
 -- --------------------------------------------------------
 
@@ -71,6 +76,7 @@ INSERT INTO `einstellungen` (`id`, `email_empfaenger`, `anzahl_logeintraege`) VA
 -- Tabellenstruktur für Tabelle `logeintraege`
 --
 
+DROP TABLE IF EXISTS `logeintraege`;
 CREATE TABLE `logeintraege` (
   `id` int(11) NOT NULL,
   `zeitpunkt` datetime NOT NULL,
@@ -84,6 +90,7 @@ CREATE TABLE `logeintraege` (
 -- Tabellenstruktur für Tabelle `spielpartien`
 --
 
+DROP TABLE IF EXISTS `spielpartien`;
 CREATE TABLE `spielpartien` (
   `id` int(11) NOT NULL,
   `startzeit` datetime NOT NULL DEFAULT current_timestamp(),
@@ -103,6 +110,7 @@ INSERT INTO `spielpartien` (`id`, `startzeit`, `beendet`) VALUES
 -- Tabellenstruktur für Tabelle `spielteilnehmer`
 --
 
+DROP TABLE IF EXISTS `spielteilnehmer`;
 CREATE TABLE `spielteilnehmer` (
   `id` int(11) NOT NULL,
   `spiel_id` int(11) NOT NULL,
@@ -124,6 +132,7 @@ INSERT INTO `spielteilnehmer` (`id`, `spiel_id`, `benutzer_id`, `punkte`) VALUES
 -- Tabellenstruktur für Tabelle `spielzuege`
 --
 
+DROP TABLE IF EXISTS `spielzuege`;
 CREATE TABLE `spielzuege` (
   `id` int(11) NOT NULL,
   `teilnehmer_id` int(11) NOT NULL,
