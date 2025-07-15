@@ -51,7 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
         img.alt = `Würfel ${value}`;
       }
     });
-    // TODO: Punktevorschau aktivieren & "SPIELEN" freigeben, wenn sinnvoll
+    // Punkteberechnung starten
+    sendeWurfZurBerechnung(diceValues);
   }
 
   function updateDiodes() {

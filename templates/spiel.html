@@ -2,52 +2,39 @@
 
 <!-- 🧠 Kopfbereich: Spieleranzeige -->
 <div class="bg-gray-100 dark:bg-gray-800 rounded-2xl p-4 shadow mb-6">
-  <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
-    Aktuelle Spieler
-  </h2>
+  <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Aktuelle Spieler</h2>
   <div class="flex flex-wrap gap-2">
-    <div
-      class="px-3 py-2 rounded-lg text-white font-semibold shadow"
-      style="background-color: #e63946"
-    >
-      Basti: 0
+    {% for s in spieler %}
+    <div class="px-3 py-2 rounded-lg text-white font-semibold shadow" style="background-color: #{{ 'e63946' if loop.index0 == 0 else '457b9d' }}">
+      {{ s.benutzername }}: {{ s.punkte }}
     </div>
-    <div
-      class="px-3 py-2 rounded-lg text-white font-semibold shadow"
-      style="background-color: #457b9d"
-    >
-      Admin: 0
-    </div>
-    <!-- Weitere Spieler hier -->
+    {% endfor %}
   </div>
 </div>
 
 <!-- 🎲 Spielfläche für Spieler -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-  <!-- 🧩 Ein Spielfeld -->
+  {% for s in spieler %}
   <div class="bg-white dark:bg-gray-900 rounded-2xl shadow p-4">
     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">
-      Spieler: Basti
+      Spieler: {{ s.benutzername }}
     </h3>
     <div class="space-y-2">
-      {% for kategorie in ["Einsen", "Zweien", "Dreien", "Vieren", "Fünfen",
-      "Sechsen", "Dreierpasch", "Viererpasch", "Full House", "Kleine Straße",
-      "Große Straße", "Kniffel", "Chance"] %}
-      <div
-        class="flex justify-between items-center bg-gray-100 dark:bg-gray-800 p-2 rounded-lg"
-      >
+      {% for kategorie in [
+        "Einsen", "Zweien", "Dreien", "Vieren", "Fünfen", "Sechsen",
+        "Dreierpasch", "Viererpasch", "Full House", "Kleine Straße",
+        "Große Straße", "Kniffel", "Chance"
+      ] %}
+      <div class="flex justify-between items-center bg-gray-100 dark:bg-gray-800 p-2 rounded-lg">
         <span class="text-gray-800 dark:text-gray-200">{{ kategorie }}</span>
         <button
           class="w-12 h-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg text-center"
-        >
-          0
-        </button>
+         data-kategorie="{{ kategorie }}">0</button>
       </div>
       {% endfor %}
     </div>
   </div>
-
-  <!-- Weitere Spielfelder bei Bedarf -->
+  {% endfor %}
 </div>
 
 <!-- 🎲 Würfelanzeige -->
@@ -100,6 +87,7 @@
   </div>
 </div>
 
+<script src="{{ url_for('static', filename='js/spielbrett.js') }}"></script>
 <script src="{{ url_for('static', filename='js/dice.js') }}"></script>
 
 {% endblock %}

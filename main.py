@@ -29,10 +29,10 @@ mysql = MySQL(app)
 init_utils(mysql)
 
 # 📦 Eigene Module
-from auth_routes import auth
-from core_routes import core
-from admin_routes import admin
-from spiel_routes import game
+from blueprints.auth import auth
+from blueprints.core import core
+from blueprints.admin import admin
+from blueprints.spiel import game
 
 # 🔗 Blueprints registrieren
 app.register_blueprint(auth)
