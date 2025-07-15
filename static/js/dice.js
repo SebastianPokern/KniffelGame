@@ -52,6 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
     // Punkteberechnung starten
+    window.currentWuerfel = [...diceValues];
     sendeWurfZurBerechnung(diceValues);
   }
 

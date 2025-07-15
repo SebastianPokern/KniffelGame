@@ -42,35 +42,15 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btn-wuerfeln")?.addEventListener("click", () => {
     // Warte kurz bis dice-Werte gezeichnet sind
     setTimeout(() => {
-      const gewuerfelt = Array.from(document.querySelectorAll(".dice-row img:not(.hidden)"))
-         .map(img => {
-            const match = img.src.match(/dice(\d)\.svg/);
-            return match && match[1] ? parseInt(match[1]) : null;
-          })
-          .filter(val => val !== null && val >= 1 && val <= 6);
-
-        console.log("Sende Würfel zur Berechnung:", gewuerfelt);
-
-      currentWuerfel = gewuerfelt;
-      sendeWurfZurBerechnung(currentWuerfel);
-    }, 200);
+      sendeWurfZurBerechnung(window.currentWuerfel);
+    }, 100);
   });
 
   // Zweit- und Drittwurf-Button (innerhalb #spiel-controls)
   document.querySelector("#spiel-controls button")?.addEventListener("click", () => {
     setTimeout(() => {
-      const gewuerfelt = Array.from(document.querySelectorAll(".dice-row img:not(.hidden)"))
-         .map(img => {
-            const match = img.src.match(/dice(\d)\.svg/);
-            return match && match[1] ? parseInt(match[1]) : null;
-          })
-          .filter(val => val !== null && val >= 1 && val <= 6);
-
-        console.log("Sende Würfel zur Berechnung:", gewuerfelt);
-
-      currentWuerfel = gewuerfelt;
-      sendeWurfZurBerechnung(currentWuerfel);
-    }, 200);
+      sendeWurfZurBerechnung(window.currentWuerfel);
+    }, 100);
   });
 
   // SPIELEN-Button (Aktion speichern folgt später)
