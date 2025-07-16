@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const diceImages = Array.from(document.querySelectorAll(".dice-row img")).filter(img => {
-    return window.getComputedStyle(img).display !== "none";
-  });
+  const diceImages = document.querySelectorAll(".dice-row img");
   const rollButton = document.getElementById("btn-wuerfeln");
   const controlSection = document.getElementById("spiel-controls");
   const diodes = controlSection?.querySelectorAll("div > div");
@@ -13,10 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const diceValues = [0, 0, 0, 0, 0];
   const lockedDice = [false, false, false, false, false];
 
-  // Würfel klicken = sperren
+  // Würfel klickbar machen: Sperren/Entsperren nach dem ersten Wurf
   diceImages.forEach((img, index) => {
     img.addEventListener("click", () => {
-      if (currentRoll === 0) return; // Nur nach dem ersten Wurf sperrbar
+      if (currentRoll === 0) return;
       lockedDice[index] = !lockedDice[index];
       img.classList.toggle("ring-4");
       img.classList.toggle("ring-yellow-400");
@@ -53,9 +51,14 @@ document.addEventListener("DOMContentLoaded", () => {
         img.alt = `Würfel ${value}`;
       }
     });
-    // Punkteberechnung starten
+
+    // 🧠 Ergebnis global merken
     window.currentWuerfel = [...diceValues];
-    //sendeWurfZurBerechnung(diceValues);
+
+    // 🔁 Punkte berechnen lassen
+    if (typeof window.sendeWurfZurBerechnung === "function") {
+      window.sendeWurfZurBerechnung(diceValues);
+    }
   }
 
   function updateDiodes() {

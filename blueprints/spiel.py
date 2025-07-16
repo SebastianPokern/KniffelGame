@@ -1,5 +1,5 @@
 # blueprints/spiel.py
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, jsonify, session
 from utils import login_required, mysql
 from spiel_logik import (
     berechne_augen, berechne_dreierpasch, berechne_viererpasch,
@@ -12,13 +12,19 @@ from werkzeug.security import generate_password_hash
 import random
 import string
 
+import MySQLdb.cursors
+
 game = Blueprint("spiel", __name__)
 
 # 🏠 Spielbrett
 @game.route("/spiel/<int:spiel_id>", strict_slashes=False)
 @login_required
 def spielbrett(user, spiel_id):
-    import MySQLdb.cursors
+
+    session["spiel_id"] = spiel_id
+
+    print("Aktuelle Session:", session)
+
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
     # Teilnehmer + Benutzerdaten holen
@@ -134,3 +140,59 @@ def ajax_punkte_berechnung(user):
 
     except Exception as e:
         return jsonify({"fehler": str(e)}), 500
+
+# Route zum Speichern eines Spielzugs
+@game.route("/ajax/zug-speichern", methods=["POST"])
+@login_required
+def ajax_zug_speichern(user):
+    try:
+        daten = request.get_json()
+        kategorie = daten.get("kategorie")
+        punkte = daten.get("punkte")
+        wuerfel = daten.get("wuerfel")
+
+        if not kategorie or punkte is None or not isinstance(wuerfel, list) or len(wuerfel) != 5:
+            return jsonify({"status": "fehler", "msg": "Ungültige Daten"}), 400
+
+        spiel_id = session.get("spiel_id")
+        if not spiel_id:
+            return jsonify({"status": "fehler", "msg": "Kein aktives Spiel"}), 400
+
+        # Teilnehmer-ID holen
+        cursor = mysql.connection.cursor()
+        cursor.execute("""
+            SELECT id FROM spielteilnehmer
+            WHERE benutzer_id = %s AND spiel_id = %s
+        """, (user["id"], spiel_id))
+        teilnehmer = cursor.fetchone()
+        if not teilnehmer:
+            return jsonify({"status": "fehler", "msg": "Teilnehmer nicht gefunden"}), 404
+
+        teilnehmer_id = teilnehmer[0]
+
+        # Zählung bisheriger Züge für diesen Teilnehmer = Rundenfortschritt
+        cursor.execute("""
+            SELECT COUNT(*) FROM spielzuege
+            WHERE teilnehmer_id = %s AND gewertet = 1
+        """, (teilnehmer_id,))
+        anzahl_runden = cursor.fetchone()[0]
+        aktuelle_runde = anzahl_runden + 1
+
+        # Einfügen des neuen Zugs
+        cursor.execute("""
+            INSERT INTO spielzuege (teilnehmer_id, wurf_nummer, wuerfelwerte, gewertet, punktekategorie, punkte)
+            VALUES (%s, %s, %s, 1, %s, %s)
+        """, (
+            teilnehmer_id,
+            3,  # Wir gehen davon aus, dass der dritte Wurf gemacht wurde
+            ",".join(str(w) for w in wuerfel),
+            kategorie,
+            punkte
+        ))
+        mysql.connection.commit()
+
+        return jsonify({"status": "ok"})
+
+    except Exception as e:
+        current_app.logger.error(f"Fehler beim Speichern des Zuges: {e}")
+        return jsonify({"status": "fehler", "msg": "Interner Fehler"}), 500

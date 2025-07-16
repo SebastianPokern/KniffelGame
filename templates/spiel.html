@@ -42,14 +42,9 @@
   <div class="flex justify-center gap-4 mb-4">
     {% for i in range(1, 6) %}
     <img
-      src="{{ url_for('static', filename='img/dice/dice' + i|string + '-white.svg') }}"
-      alt="Würfel {{ i }}"
-      class="w-16 h-16 cursor-pointer hover:scale-110 transition-transform duration-200 hidden dark:block"
-    />
-    <img
       src="{{ url_for('static', filename='img/dice/dice' + i|string + '.svg') }}"
       alt="Würfel {{ i }}"
-      class="w-16 h-16 cursor-pointer hover:scale-110 transition-transform duration-200 dark:hidden"
+      class="w-16 h-16 cursor-pointer hover:scale-110 transition-transform duration-200"
     />
     {% endfor %}
   </div>

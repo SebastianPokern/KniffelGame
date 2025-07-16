@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de" class="{% if session.get('theme') == 'dark' %}dark{% else %}light{% endif %}">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Kniffeln!{% endblock %}</title>
@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     {% block head %}{% endblock %}
 </head>
-<body class="bg-gray-100 text-black dark:bg-gray-900 dark:text-white flex items-center justify-center min-h-screen">
+<body class="bg-gray-100 text-black flex items-center justify-center min-h-screen">
     <div class="bg-white dark:bg-gray-800 p-8 rounded shadow-md w-[48rem] max-w-full mx-auto text-center">
         {% block content %}{% endblock %}
 
