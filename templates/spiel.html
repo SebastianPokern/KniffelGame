@@ -3,19 +3,30 @@
 <!-- 🧠 Kopfbereich: Spieleranzeige -->
 <div class="bg-gray-100 dark:bg-gray-800 rounded-2xl p-4 shadow mb-6">
   <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Aktuelle Spieler</h2>
-  <div class="flex flex-wrap gap-2">
+  <div class="flex gap-2 flex-wrap">
     {% for s in spieler %}
-    <div class="px-3 py-2 rounded-lg text-white font-semibold shadow" style="background-color: #{{ 'e63946' if loop.index0 == 0 else '457b9d' }}">
-      {{ s.benutzername }}: {{ s.punkte }}
-    </div>
+      <div class="player-badge {% if s.benutzer_id == aktiver_benutzer %}
+                    bg-red-500 text-white
+                  {% else %}
+                    bg-gray-200 text-gray-600
+                  {% endif %}
+                  px-4 py-1 rounded-full text-sm font-medium shadow" data-teilnehmer-id="{{ s.teilnehmer_id }}">
+        {{ s.benutzername }}: {{ s.punkte }}
+      </div>
     {% endfor %}
   </div>
+</div>
+
+<div id="spiel-metadata"
+     data-user-id="{{ session.user_id }}"
+     data-aktiver-benutzer="{{ aktiver_benutzer }}">
 </div>
 
 <!-- 🎲 Spielfläche für Spieler -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
   {% for s in spieler %}
-  <div class="bg-white dark:bg-gray-900 rounded-2xl shadow p-4">
+  <div class="bg-white dark:bg-gray-900 rounded-2xl shadow p-4"
+  data-teilnehmer-id="{{ s.teilnehmer_id }}">
     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">
       Spieler: {{ s.benutzername }}
     </h3>

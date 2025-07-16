@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 15. Jul 2025 um 08:06
+-- Erstellungszeit: 16. Jul 2025 um 22:06
 -- Server-Version: 10.4.32-MariaDB
 -- PHP-Version: 8.2.12
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Datenbank: `kniffeln`
 --
-CREATE DATABASE IF NOT EXISTS `kniffeln` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `kniffeln`;
 
 -- --------------------------------------------------------
 
@@ -29,7 +27,6 @@ USE `kniffeln`;
 -- Tabellenstruktur für Tabelle `benutzer`
 --
 
-DROP TABLE IF EXISTS `benutzer`;
 CREATE TABLE `benutzer` (
   `id` int(11) NOT NULL,
   `benutzername` varchar(50) NOT NULL,
@@ -47,7 +44,10 @@ CREATE TABLE `benutzer` (
 
 INSERT INTO `benutzer` (`id`, `benutzername`, `passwort_hash`, `email`, `ist_aktiv`, `erstellt_am`, `ist_admin`, `theme`) VALUES
 (1, 'Admin', '$2b$12$H.2iGm8r4F8xuikzH0GZ8e91kVfDAnvBzrTc8vFZ6Yrd8SYZRaW9q', 'sebastian.pokern@googlemail.com', 1, '2025-06-05 13:27:34', 1, 'light'),
-(2, 'Basti', '$2b$12$nqlvTdp4mZBv43s6AbYVUOC0nEr0KM4/IABKcr.0QFb44ruGVTTpu', 'sebastian.pokern@googlemail.com', 1, '2025-06-05 13:27:34', 1, 'light');
+(2, 'Basti', '$2b$12$nqlvTdp4mZBv43s6AbYVUOC0nEr0KM4/IABKcr.0QFb44ruGVTTpu', 'sebastian.pokern@googlemail.com', 1, '2025-06-05 13:27:34', 1, 'dark'),
+(3, 'Max', '1IEIvDaR3z', NULL, 1, '2025-07-15 13:13:09', 0, 'light'),
+(4, 'Vérénice', 'Fj2XlBJVK9', NULL, 1, '2025-07-15 13:13:09', 0, 'light'),
+(5, 'Tom', 'scrypt:32768:8:1$qYpGHqlRcuHKzMHy$ca66db315801634d34c929695a5d6f52f4de460891d2eead734c03d1b1fe95d08e902491918802e0166ac29193ff19de3be247e7879805d87fd9afa3e92baf67', NULL, 1, '2025-07-15 13:54:16', 0, 'light');
 
 -- --------------------------------------------------------
 
@@ -55,7 +55,6 @@ INSERT INTO `benutzer` (`id`, `benutzername`, `passwort_hash`, `email`, `ist_akt
 -- Tabellenstruktur für Tabelle `einstellungen`
 --
 
-DROP TABLE IF EXISTS `einstellungen`;
 CREATE TABLE `einstellungen` (
   `id` int(11) NOT NULL,
   `email_empfaenger` varchar(255) DEFAULT NULL,
@@ -73,24 +72,9 @@ INSERT INTO `einstellungen` (`id`, `email_empfaenger`, `anzahl_logeintraege`, `m
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `logeintraege`
---
-
-DROP TABLE IF EXISTS `logeintraege`;
-CREATE TABLE `logeintraege` (
-  `id` int(11) NOT NULL,
-  `zeitpunkt` datetime NOT NULL,
-  `benutzer_id` int(11) DEFAULT NULL,
-  `meldung` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Tabellenstruktur für Tabelle `spielpartien`
 --
 
-DROP TABLE IF EXISTS `spielpartien`;
 CREATE TABLE `spielpartien` (
   `id` int(11) NOT NULL,
   `startzeit` datetime NOT NULL DEFAULT current_timestamp(),
@@ -102,7 +86,11 @@ CREATE TABLE `spielpartien` (
 --
 
 INSERT INTO `spielpartien` (`id`, `startzeit`, `beendet`) VALUES
-(1, '2025-07-10 16:56:24', 0);
+(1, '2025-07-10 16:56:24', 0),
+(4, '2025-07-15 13:13:09', 0),
+(5, '2025-07-15 13:39:47', 0),
+(6, '2025-07-15 13:54:16', 0),
+(7, '2025-07-15 14:06:52', 0);
 
 -- --------------------------------------------------------
 
@@ -110,21 +98,33 @@ INSERT INTO `spielpartien` (`id`, `startzeit`, `beendet`) VALUES
 -- Tabellenstruktur für Tabelle `spielteilnehmer`
 --
 
-DROP TABLE IF EXISTS `spielteilnehmer`;
 CREATE TABLE `spielteilnehmer` (
   `id` int(11) NOT NULL,
   `spiel_id` int(11) NOT NULL,
   `benutzer_id` int(11) NOT NULL,
-  `punkte` int(11) DEFAULT 0
+  `punkte` int(11) DEFAULT 0,
+  `ist_aktiv` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Daten für Tabelle `spielteilnehmer`
 --
 
-INSERT INTO `spielteilnehmer` (`id`, `spiel_id`, `benutzer_id`, `punkte`) VALUES
-(1, 1, 1, 0),
-(2, 1, 2, 0);
+INSERT INTO `spielteilnehmer` (`id`, `spiel_id`, `benutzer_id`, `punkte`, `ist_aktiv`) VALUES
+(1, 1, 1, 0, 0),
+(2, 1, 2, 0, 0),
+(5, 4, 2, 0, 0),
+(6, 4, 3, 0, 0),
+(7, 4, 4, 0, 0),
+(8, 5, 2, 0, 0),
+(9, 5, 4, 0, 0),
+(10, 5, 3, 0, 0),
+(11, 6, 2, 0, 0),
+(12, 6, 4, 0, 0),
+(13, 6, 5, 0, 0),
+(14, 7, 2, 56, 0),
+(15, 7, 3, 0, 1),
+(16, 7, 4, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -132,7 +132,6 @@ INSERT INTO `spielteilnehmer` (`id`, `spiel_id`, `benutzer_id`, `punkte`) VALUES
 -- Tabellenstruktur für Tabelle `spielzuege`
 --
 
-DROP TABLE IF EXISTS `spielzuege`;
 CREATE TABLE `spielzuege` (
   `id` int(11) NOT NULL,
   `teilnehmer_id` int(11) NOT NULL,
@@ -149,7 +148,10 @@ CREATE TABLE `spielzuege` (
 --
 
 INSERT INTO `spielzuege` (`id`, `teilnehmer_id`, `wurf_nummer`, `wurfzeit`, `wuerfelwerte`, `gewertet`, `punktekategorie`, `punkte`) VALUES
-(1, 2, 1, '2025-07-10 16:56:25', '2,2,4,4,6', 1, 'Zweimal Zweier', 8);
+(1, 2, 1, '2025-07-10 16:56:25', '2,2,4,4,6', 1, 'Zweimal Zweier', 8),
+(7, 14, 3, '2025-07-16 21:29:31', '3,3,1,3,3', 1, 'Dreien', 12),
+(8, 14, 3, '2025-07-16 22:04:22', '5,6,5,1,5', 1, 'Dreierpasch', 22),
+(9, 14, 3, '2025-07-16 22:04:26', '5,6,5,1,5', 1, 'Dreierpasch', 22);
 
 --
 -- Indizes der exportierten Tabellen
@@ -167,13 +169,6 @@ ALTER TABLE `benutzer`
 --
 ALTER TABLE `einstellungen`
   ADD PRIMARY KEY (`id`);
-
---
--- Indizes für die Tabelle `logeintraege`
---
-ALTER TABLE `logeintraege`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `benutzer_id` (`benutzer_id`);
 
 --
 -- Indizes für die Tabelle `spielpartien`
@@ -204,7 +199,7 @@ ALTER TABLE `spielzuege`
 -- AUTO_INCREMENT für Tabelle `benutzer`
 --
 ALTER TABLE `benutzer`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT für Tabelle `einstellungen`
@@ -213,38 +208,26 @@ ALTER TABLE `einstellungen`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT für Tabelle `logeintraege`
---
-ALTER TABLE `logeintraege`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
 -- AUTO_INCREMENT für Tabelle `spielpartien`
 --
 ALTER TABLE `spielpartien`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT für Tabelle `spielteilnehmer`
 --
 ALTER TABLE `spielteilnehmer`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT für Tabelle `spielzuege`
 --
 ALTER TABLE `spielzuege`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints der exportierten Tabellen
 --
-
---
--- Constraints der Tabelle `logeintraege`
---
-ALTER TABLE `logeintraege`
-  ADD CONSTRAINT `logeintraege_ibfk_1` FOREIGN KEY (`benutzer_id`) REFERENCES `benutzer` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints der Tabelle `spielteilnehmer`

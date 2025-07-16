@@ -1,4 +1,5 @@
 // spielbrett.js
+
 document.addEventListener("DOMContentLoaded", () => {
   const punktButtons = document.querySelectorAll("[data-kategorie]");
   const spielenButton = document.querySelector("#spiel-controls button:last-child");
@@ -82,17 +83,18 @@ document.addEventListener("DOMContentLoaded", () => {
     })
       .then(r => r.json())
       .then(res => {
-        if (res.status === "ok") {
-          button.classList.remove("cursor-pointer", "hover:ring-2", "ring", "ring-yellow-400");
-          button.classList.add("opacity-50");
-          spielenButton.disabled = true;
-          spielenButton.classList.add("opacity-50", "cursor-not-allowed");
-          console.log("Zug gespeichert – nächster Spieler folgt");
-          location.reload(); // Temporär bis zur echten Spielerwechsel-Logik
-        } else {
-          alert("Fehler: " + res.msg);
-        }
-      })
+          if (res.status === "ok") {
+            // dynamisch alles neu aufbauen
+            aktualisiereSpielbrett(res);
+          }
+          else if (res.status === "fertig") {
+            // Spielende → Gewinnerseite
+            window.location.href = res.redirect;
+          }
+          else {
+            alert("Fehler: " + res.msg);
+          }
+        })
       .catch(console.error);
   });
 
@@ -107,6 +109,59 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 50);
     });
   }
+
+  // Dynamische Aktualisierung des Spielbretts
+  function aktualisiereSpielbrett(res) {
+      const { next_player, spieler } = res;
+
+      // 1) Header-Badges updaten
+      document.querySelectorAll(".player-badge").forEach(badge => {
+        const tid = parseInt(badge.dataset.teilnehmerId, 10);
+        const data = spieler.find(s => s.teilnehmer_id === tid);
+        if (!data) return;
+        // Punkte aktualisieren
+        badge.querySelector(".punkte").textContent = data.punkte;
+
+        // aktiver Spieler?
+        if (tid === next_player) {
+          badge.classList.add("bg-red-500","text-white");
+          badge.classList.remove("bg-gray-200","text-gray-600");
+        } else {
+          badge.classList.remove("bg-red-500","text-white");
+          badge.classList.add("bg-gray-200","text-gray-600");
+        }
+      });
+
+      // 2) Spielfläche wechseln: nur das erste .grid > div ist aktiv
+      //    Wir gehen davon aus, dass die Spielerfelder in der gleichen Reihenfolge wie badges aufgebaut sind.
+      const felder = Array.from(document.querySelectorAll(".grid > div"));
+      felder.forEach((feld, idx) => {
+        const tId = parseInt(feld.dataset.teilnehmerId, 10);
+        if (tId === next_player) {
+          feld.classList.remove("opacity-50");
+          feld.querySelectorAll("button[data-kategorie]").forEach(b=>b.disabled=false);
+        } else {
+          feld.classList.add("opacity-50");
+          feld.querySelectorAll("button[data-kategorie]").forEach(b=>b.disabled=true);
+        }
+      });
+
+      // 3) Würfel‑UI zurücksetzen
+      currentWuerfel = [];
+      lockedDice.fill(false);
+      document.querySelectorAll(".dice-row img").forEach(img => {
+        img.classList.remove("ring-4","ring-yellow-400");
+        img.src = img.src.replace("-white.svg",".svg"); // ggf. Theme‑SVG anpassen
+      });
+      document.getElementById("spiel-controls").classList.add("hidden");
+      document.getElementById("btn-wuerfeln").classList.remove("hidden");
+
+      // 4) Kategorie-Buttons löschen & neu berechnen bei erstem Wurf
+      document.querySelectorAll("[data-kategorie]").forEach(btn => {
+        btn.textContent = "0";
+        btn.classList.remove("ring","ring-yellow-400","ring-red-500","cursor-pointer","hover:ring-2");
+      });
+    }
 
   attachWurfListener("#btn-wuerfeln");
   attachWurfListener("#spiel-controls button");

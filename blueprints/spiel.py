@@ -1,5 +1,8 @@
 # blueprints/spiel.py
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, jsonify, session
+from flask import (
+    Blueprint, render_template, request, redirect, url_for,
+    flash, current_app, jsonify, session
+)
 from utils import login_required, mysql
 from spiel_logik import (
     berechne_augen, berechne_dreierpasch, berechne_viererpasch,
@@ -11,7 +14,7 @@ from spiel_logik import (
 from werkzeug.security import generate_password_hash
 import random
 import string
-
+from datetime import datetime
 import MySQLdb.cursors
 
 game = Blueprint("spiel", __name__)
@@ -20,23 +23,49 @@ game = Blueprint("spiel", __name__)
 @game.route("/spiel/<int:spiel_id>", strict_slashes=False)
 @login_required
 def spielbrett(user, spiel_id):
-
     session["spiel_id"] = spiel_id
-
     print("Aktuelle Session:", session)
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
-    # Teilnehmer + Benutzerdaten holen
+    # Teilnehmer, Benutzerdaten + aktuelle Punkte aus spielzuege holen
     cursor.execute("""
-            SELECT b.benutzername, st.punkte
-            FROM spielteilnehmer st
-            JOIN benutzer b ON st.benutzer_id = b.id
-            WHERE st.spiel_id = %s
-        """, (spiel_id,))
+        SELECT 
+            b.benutzername,
+            st.ist_aktiv,
+            st.benutzer_id,
+            st.id AS teilnehmer_id,
+            COALESCE(SUM(sz.punkte), 0) AS punkte
+        FROM spielteilnehmer st
+        JOIN benutzer b ON st.benutzer_id = b.id
+        LEFT JOIN spielzuege sz ON sz.teilnehmer_id = st.id AND sz.gewertet = 1
+        WHERE st.spiel_id = %s
+        GROUP BY st.id
+    """, (spiel_id,))
     spieler = cursor.fetchall()
 
-    return render_template("spiel.html", spiel_id=spiel_id, spieler=spieler)
+    aktiver_benutzer = next((s["benutzer_id"] for s in spieler if s["ist_aktiv"]), None)
+
+    return render_template("spiel.html",
+                           spiel_id=spiel_id,
+                           spieler=spieler,
+                           aktiver_benutzer=aktiver_benutzer)
+
+# Spielende-Anzeige
+@game.route("/spiel/<int:spiel_id>/gewinner", strict_slashes=False)
+@login_required
+def gewinner_anzeige(user, spiel_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("""
+        SELECT b.benutzername, st.punkte
+        FROM spielteilnehmer st
+        JOIN benutzer b ON b.id = st.benutzer_id
+        WHERE st.spiel_id = %s
+        ORDER BY st.punkte DESC
+    """, (spiel_id,))
+    spieler = cursor.fetchall()
+    gewinner = spieler[0] if spieler else None
+    return render_template("gewinner.html", spieler=spieler, gewinner=gewinner)
 
 # 🎮 Neues Spiel starten
 @game.route("/neues-spiel", methods=["GET", "POST"])
@@ -159,7 +188,7 @@ def ajax_zug_speichern(user):
             return jsonify({"status": "fehler", "msg": "Kein aktives Spiel"}), 400
 
         # Teilnehmer-ID holen
-        cursor = mysql.connection.cursor()
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute("""
             SELECT id FROM spielteilnehmer
             WHERE benutzer_id = %s AND spiel_id = %s
@@ -168,14 +197,22 @@ def ajax_zug_speichern(user):
         if not teilnehmer:
             return jsonify({"status": "fehler", "msg": "Teilnehmer nicht gefunden"}), 404
 
-        teilnehmer_id = teilnehmer[0]
+        teilnehmer_id = teilnehmer["id"]
 
         # Zählung bisheriger Züge für diesen Teilnehmer = Rundenfortschritt
         cursor.execute("""
-            SELECT COUNT(*) FROM spielzuege
+            SELECT COUNT(*) AS anzahl
+            FROM spielzuege
             WHERE teilnehmer_id = %s AND gewertet = 1
         """, (teilnehmer_id,))
-        anzahl_runden = cursor.fetchone()[0]
+        row = cursor.fetchone()
+        # bei DictCursor ist row ein dict, bei normalem Cursor ein tuple
+        if isinstance(row, dict):
+            # nimm das erste (und einzige) Value im Dict:
+            anzahl_runden = list(row.values())[0]
+        else:
+            # tuple‑Fallback (z.B. wenn doch kein DictCursor aktiv)
+            anzahl_runden = row[0]
         aktuelle_runde = anzahl_runden + 1
 
         # Einfügen des neuen Zugs
@@ -191,7 +228,99 @@ def ajax_zug_speichern(user):
         ))
         mysql.connection.commit()
 
-        return jsonify({"status": "ok"})
+        # Punkte aktualisieren
+        cursor.execute("""
+            UPDATE spielteilnehmer
+            SET punkte = punkte + %s
+            WHERE id = %s
+        """, (punkte, teilnehmer_id))
+
+        # Aktiven Spieler deaktivieren
+        cursor.execute("""
+            UPDATE spielteilnehmer
+            SET ist_aktiv = 0
+            WHERE spiel_id = %s
+        """, (spiel_id,))
+
+        # Nächsten Spieler aktivieren (runde-rotiert)
+        cursor.execute("""
+            SELECT id FROM spielteilnehmer
+            WHERE spiel_id = %s
+            ORDER BY id
+        """, (spiel_id,))
+        alle_ids = [row["id"] for row in cursor.fetchall()]
+        index = alle_ids.index(teilnehmer_id)
+        naechster_id = alle_ids[(index + 1) % len(alle_ids)]
+
+        cursor.execute("""
+            UPDATE spielteilnehmer
+            SET ist_aktiv = 1
+            WHERE id = %s
+        """, (naechster_id,))
+
+        # Prüfen ob alle 13 Kategorien vergeben sind pro Spieler
+        cursor.execute("""
+            SELECT COUNT(*) AS anzahl
+            FROM spielzuege
+            WHERE teilnehmer_id = %s AND gewertet = 1
+        """, (teilnehmer_id,))
+        row = cursor.fetchone()
+        if isinstance(row, dict):
+            anzahl_runden = list(row.values())[0]
+        else:
+            anzahl_runden = row[0]
+
+        spiel_beendet = False
+        if anzahl_runden >= 13:
+            # Prüfen ob *alle* Spieler 13 Runden gespielt haben
+            cursor.execute("""
+                SELECT COUNT(*) AS offenes
+                FROM spielteilnehmer t
+                LEFT JOIN (
+                    SELECT teilnehmer_id, COUNT(*) AS zuege
+                    FROM spielzuege
+                    WHERE gewertet = 1
+                    GROUP BY teilnehmer_id
+                ) z ON z.teilnehmer_id = t.id
+                WHERE t.spiel_id = %s AND (z.zuege IS NULL OR z.zuege < 13)
+            """, (spiel_id,))
+            offenes = cursor.fetchone()["offenes"]
+            if offenes == 0:
+                spiel_beendet = True
+                # Redirect auf Spielende-Seite
+                return jsonify({"status": "fertig", "redirect": url_for("spiel.gewinner_anzeige", spiel_id=spiel_id)})
+
+        mysql.connection.commit()
+
+        cursor.execute("""
+                SELECT st.benutzer_id, st.id AS teilnehmer_id, st.ist_aktiv
+                FROM spielteilnehmer st
+                WHERE st.spiel_id = %s
+            """, (spiel_id,))
+        teilnehmer_daten = cursor.fetchall()
+
+        # Für jeden Teilnehmer die aktuellen Punkte summieren
+        spieler_liste = []
+        for t in teilnehmer_daten:
+            cursor.execute("""
+                    SELECT COALESCE(SUM(punkte),0) AS summe
+                    FROM spielzuege
+                    WHERE teilnehmer_id = %s AND gewertet = 1
+                """, (t["teilnehmer_id"],))
+            punkte = cursor.fetchone()["summe"]
+            spieler_liste.append({
+                "benutzer_id": t["benutzer_id"],
+                "teilnehmer_id": t["teilnehmer_id"],
+                "ist_aktiv": bool(t["ist_aktiv"]),
+                "punkte": punkte
+            })
+
+        # JSON‑Antwort zusammenbauen
+        return jsonify({
+            "status": "ok",
+            "next_player": naechster_id,
+            "spieler": spieler_liste
+        })
 
     except Exception as e:
         current_app.logger.error(f"Fehler beim Speichern des Zuges: {e}")

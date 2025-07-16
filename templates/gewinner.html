@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+  <div class="text-center mt-10">
+    {% if gewinner %}
+      <h1 class="text-3xl font-bold text-green-600 mb-4">🎉 Glückwunsch {{ gewinner.benutzername }}!</h1>
+      <p class="text-lg mb-6">Du hast mit <strong>{{ gewinner.punkte }}</strong> Punkten gewonnen.</p>
+    {% else %}
+      <p class="text-red-500">Es konnte kein Gewinner ermittelt werden.</p>
+    {% endif %}
+
+    <h2 class="text-xl mt-8 mb-2">Ergebnisse</h2>
+    <ul class="text-left inline-block">
+      {% for s in spieler %}
+        <li>{{ s.benutzername }}: {{ s.punkte }} Punkte</li>
+      {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('spiel.neues_spiel') }}"
+       class="mt-8 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+      🔄 Neues Spiel starten
+    </a>
+  </div>
+{% endblock %}
