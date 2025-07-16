@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const diceImages = document.querySelectorAll(".dice-row img");
+  const diceImages = Array.from(document.querySelectorAll(".dice-row img")).filter(img => {
+    return window.getComputedStyle(img).display !== "none";
+  });
   const rollButton = document.getElementById("btn-wuerfeln");
   const controlSection = document.getElementById("spiel-controls");
   const diodes = controlSection?.querySelectorAll("div > div");
@@ -53,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     // Punkteberechnung starten
     window.currentWuerfel = [...diceValues];
-    sendeWurfZurBerechnung(diceValues);
+    //sendeWurfZurBerechnung(diceValues);
   }
 
   function updateDiodes() {

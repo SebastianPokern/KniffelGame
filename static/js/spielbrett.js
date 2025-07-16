@@ -38,20 +38,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔄 Würfeln-Button-Logik (hook in dice.js oder dupliziere Roll-Logik)
-  document.getElementById("btn-wuerfeln")?.addEventListener("click", () => {
-    // Warte kurz bis dice-Werte gezeichnet sind
-    setTimeout(() => {
-      sendeWurfZurBerechnung(window.currentWuerfel);
-    }, 100);
-  });
+    // 🎲 Wenn ein Wurf abgeschlossen ist (Start- oder Folgewurf), Punkte berechnen
+  function attachWurfListener(buttonSelector) {
+    const btn = document.querySelector(buttonSelector);
+    if (!btn) return;
+    btn.addEventListener("click", () => {
+      // kleine Verzögerung, damit die UI (Würfelbilder) fertig ist
+      setTimeout(() => {
+        console.log("Aktuelle Würfelwerte:", window.currentWuerfel);
+        sendeWurfZurBerechnung(window.currentWuerfel);
+      }, 50);
+    });
+  }
 
-  // Zweit- und Drittwurf-Button (innerhalb #spiel-controls)
-  document.querySelector("#spiel-controls button")?.addEventListener("click", () => {
-    setTimeout(() => {
-      sendeWurfZurBerechnung(window.currentWuerfel);
-    }, 100);
-  });
+  // Haupt-Würfel-Button
+  attachWurfListener("#btn-wuerfeln");
+  // Erster Folgewurf-Button (innerhalb spiel-controls)
+  attachWurfListener("#spiel-controls button");
 
   // SPIELEN-Button (Aktion speichern folgt später)
   document.querySelector("#spiel-controls button:last-child")?.addEventListener("click", () => {
