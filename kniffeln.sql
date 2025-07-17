@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 17. Jul 2025 um 05:33
+-- Erstellungszeit: 17. Jul 2025 um 05:37
 -- Server-Version: 10.4.32-MariaDB
 -- PHP-Version: 8.2.12
 
@@ -72,6 +72,19 @@ CREATE TABLE `einstellungen` (
 
 INSERT INTO `einstellungen` (`id`, `email_empfaenger`, `anzahl_logeintraege`, `max_mitspieler`) VALUES
 (1, 'sebastian.pokern@googlemail.com', 20, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `logeintraege`
+--
+
+CREATE TABLE `logeintraege` (
+  `id` int(11) NOT NULL,
+  `zeitpunkt` datetime NOT NULL,
+  `benutzer_id` int(11) DEFAULT NULL,
+  `meldung` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -189,6 +202,13 @@ ALTER TABLE `einstellungen`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indizes für die Tabelle `logeintraege`
+--
+ALTER TABLE `logeintraege`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `benutzer_id` (`benutzer_id`);
+
+--
 -- Indizes für die Tabelle `spielpartien`
 --
 ALTER TABLE `spielpartien`
@@ -226,6 +246,12 @@ ALTER TABLE `einstellungen`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT für Tabelle `logeintraege`
+--
+ALTER TABLE `logeintraege`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT für Tabelle `spielpartien`
 --
 ALTER TABLE `spielpartien`
@@ -246,6 +272,12 @@ ALTER TABLE `spielzuege`
 --
 -- Constraints der exportierten Tabellen
 --
+
+--
+-- Constraints der Tabelle `logeintraege`
+--
+ALTER TABLE `logeintraege`
+  ADD CONSTRAINT `logeintraege_ibfk_1` FOREIGN KEY (`benutzer_id`) REFERENCES `benutzer` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints der Tabelle `spielteilnehmer`
