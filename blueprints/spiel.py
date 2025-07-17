@@ -135,6 +135,14 @@ def erstelle_spielpartie(spielernamen, cursor):
             (spiel_id, benutzer_id)
         )
 
+    cursor.execute("""
+            UPDATE spielteilnehmer
+            SET ist_aktiv = 1
+            WHERE spiel_id = %s
+            ORDER BY id
+            LIMIT 1
+        """, (spiel_id,))
+
     return spiel_id
 
 # Neue Route für AJAX-Anfrage zur Punkteberechnung
@@ -190,9 +198,10 @@ def ajax_zug_speichern(user):
         # Teilnehmer-ID holen
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute("""
-            SELECT id FROM spielteilnehmer
-            WHERE benutzer_id = %s AND spiel_id = %s
-        """, (user["id"], spiel_id))
+            SELECT id, benutzer_id 
+            FROM spielteilnehmer
+            WHERE spiel_id = %s AND ist_aktiv = 1
+        """, (spiel_id,))
         teilnehmer = cursor.fetchone()
         if not teilnehmer:
             return jsonify({"status": "fehler", "msg": "Teilnehmer nicht gefunden"}), 404

@@ -11,7 +11,8 @@
                     bg-gray-200 text-gray-600
                   {% endif %}
                   px-4 py-1 rounded-full text-sm font-medium shadow" data-teilnehmer-id="{{ s.teilnehmer_id }}">
-        {{ s.benutzername }}: {{ s.punkte }}
+        <span class="name">{{ s.benutzername }}</span>
+        <span class="punkte ml-2">{{ s.punkte }}</span>
       </div>
     {% endfor %}
   </div>

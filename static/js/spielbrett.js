@@ -1,13 +1,16 @@
 // static/js/spielbrett.js
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  console.log("spielbrett.js geladen, aktiverTeilnehmer:", window.aktiverTeilnehmer);
+
   // Globale State-Variablen
   window.currentWuerfel = [];
   window.gewaehlteKategorie = null;
-  // aktiverTeilnehmer initial aus dem Template ziehen
-  const startField = document.querySelector(".player-field:not(.opacity-50)");
-  window.aktiverTeilnehmer = startField
-    ? Number(startField.dataset.teilnehmerId)
+  // aktiverTeilnehmer direkt aus den Meta‑Daten holen
+  const meta = document.getElementById("spiel-metadata");
+  window.aktiverTeilnehmer = meta
+    ? Number(meta.dataset.aktiverBenutzer)
     : null;
 
   const punktButtons = document.querySelectorAll("[data-kategorie]");
@@ -119,6 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
  * Komplettes Redraw des Spielbretts nach Serverantwort
  */
 function aktualisiereSpielbrett(res) {
+
+  console.log("aktualisiereSpielbrett aufgerufen mit:", res);
+
   const nextId = res.next_player;    // spielteilnehmer.id des neuen Aktiven
   const spieler = res.spieler;       // Array mit {teilnehmer_id, ist_aktiv, punkte}
 
@@ -133,11 +139,17 @@ function aktualisiereSpielbrett(res) {
     badge.classList.toggle("text-gray-600", tid !== nextId);
   });
 
-  // 2) Spielfelder aktiv/inaktiv setzen
-  document.querySelectorAll(".player-field").forEach(field => {
-    const tid = Number(field.dataset.teilnehmerId);
-    field.classList.toggle("opacity-50", tid !== nextId);
-  });
+  // 2) Spielfelder aktiv/inaktiv setzen (und Buttons freischalten)
+    document.querySelectorAll(".player-field").forEach(field => {
+      const tid = Number(field.dataset.teilnehmerId);
+      const isActive = (tid === nextId);
+      field.classList.toggle("opacity-50", !isActive);
+
+      // Buttons im aktiven Feld an/aus schalten
+      field.querySelectorAll("button[data-kategorie]").forEach(btn => {
+        btn.disabled = !isActive;
+      });
+    });
 
   // 3) Kategorie‑Buttons zurücksetzen & nur neues Feld aktivieren
   document.querySelectorAll(".player-field button[data-kategorie]").forEach(btn => {
